@@ -1,14 +1,13 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod c;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
+    use crate::{decode, encode};
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn safe80() {
+        for _ in 0..100 {
+            let bin: [u8; 32] = rand::random();
+            assert_eq!(decode(encode(bin)), bin);
+        }
     }
 }
