@@ -51,13 +51,12 @@ static mut g_chunk_to_encode_char: [u8; 80] = [
     b'n', b'o', b'p', b'q', b'r', b's', b't', b'u', b'v', b'w', b'x', b'y', b'z', b'{', b'}', b'~',
 ];
 static mut g_chunk_to_byte_count: [i32; 20] = [
-    0_i32, 0_i32, 1_i32, 2_i32, 3_i32, 3_i32, 4_i32, 5_i32, 6_i32,
-    7_i32, 7_i32, 8_i32, 9_i32, 10_i32, 11_i32, 11_i32, 12_i32, 13_i32,
-    14_i32, 15_i32,
+    0_i32, 0_i32, 1_i32, 2_i32, 3_i32, 3_i32, 4_i32, 5_i32, 6_i32, 7_i32, 7_i32, 8_i32, 9_i32,
+    10_i32, 11_i32, 11_i32, 12_i32, 13_i32, 14_i32, 15_i32,
 ];
 static mut g_byte_to_chunk_count: [i32; 16] = [
-    0_i32, 2_i32, 3_i32, 4_i32, 6_i32, 7_i32, 8_i32, 9_i32, 11_i32,
-    12_i32, 13_i32, 14_i32, 16_i32, 17_i32, 18_i32, 19_i32,
+    0_i32, 2_i32, 3_i32, 4_i32, 6_i32, 7_i32, 8_i32, 9_i32, 11_i32, 12_i32, 13_i32, 14_i32, 16_i32,
+    17_i32, 18_i32, 19_i32,
 ];
 #[inline]
 unsafe fn accumulate_byte(accumulator: i128, byte_value: u8) -> i128 {
@@ -195,8 +194,7 @@ pub unsafe fn safe80_decode_feed(
         stream_state as libc::c_uint & SAFE80_DST_IS_AT_END_OF_STREAM as i32 as libc::c_uint != 0
             && dst.offset(g_chunk_to_byte_count[current_group_chunk_count as usize] as isize)
                 >= dst_end as *mut u8;
-    if current_group_chunk_count > 0_i32
-        && (src_is_at_end as i32 != 0 || dst_is_at_end as i32 != 0)
+    if current_group_chunk_count > 0_i32 && (src_is_at_end as i32 != 0 || dst_is_at_end as i32 != 0)
     {
         let bytes_to_write_0: i32 = g_chunk_to_byte_count[current_group_chunk_count as usize];
         let mut i_0: i32 = bytes_to_write_0 - 1_i32;
