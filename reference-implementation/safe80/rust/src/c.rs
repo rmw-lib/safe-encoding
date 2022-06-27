@@ -7,8 +7,8 @@
     unused_assignments,
     unused_mut
 )]
-#![register_tool(c2rust)]
-#![feature(register_tool)]
+//#![register_tool(c2rust)]
+//#![feature(register_tool)]
 // #define KSLogger_LocalLevel DEBUG
 static mut g_bytes_per_group: libc::c_int = 15 as libc::c_int;
 static mut g_chunks_per_group: libc::c_int = 19 as libc::c_int;
