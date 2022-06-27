@@ -67,10 +67,14 @@ unsafe extern "C" fn calculate_length_chunk_count(mut length: i128) -> libc::c_i
     }
     return chunk_count;
 }
+
+/*
 #[no_mangle]
 pub unsafe extern "C" fn safe80_version() -> *const libc::c_char {
     return b"PROJECT_VERSION\x00" as *const u8 as *const libc::c_char;
 }
+*/
+
 #[no_mangle]
 pub unsafe extern "C" fn safe80_get_decoded_length(encoded_length: i128) -> i128 {
     (encoded_length) < 0 as libc::c_int as i128;

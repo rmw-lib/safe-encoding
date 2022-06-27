@@ -13,7 +13,7 @@
 #define ANSI_EXTENSION
 #endif
 #endif
-ANSI_EXTENSION typedef __int128 int128_ct;
+ANSI_EXTENSION typedef __int128 uint64_t;
 
 static const int g_bytes_per_group = 15;
 static const int g_chunks_per_group = 19;
@@ -373,21 +373,21 @@ static const uint8_t g_chunk_to_encode_char[] = {
 static const int g_chunk_to_byte_count[] = { 0, 0, 1, 2, 3, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 14, 15 };
 static const int g_byte_to_chunk_count[] = { 0, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19 };
 
-static inline int128_ct accumulate_byte(const int128_ct accumulator, const uint8_t byte_value)
+static inline uint64_t accumulate_byte(const uint64_t accumulator, const uint8_t byte_value)
 {
-  const int128_ct new_accumulator = (accumulator << g_bits_per_byte) | byte_value;
+  const uint64_t new_accumulator = (accumulator << g_bits_per_byte) | byte_value;
   KSLOG_DEBUG("Accumulate byte value %02x. Accumulator now = %016lx %016lx", byte_value, (uint64_t)(new_accumulator >> 64), (uint64_t)new_accumulator);
   return new_accumulator;
 }
 
-static inline int128_ct accumulate_chunk(const int128_ct accumulator, const uint8_t next_chunk)
+static inline uint64_t accumulate_chunk(const uint64_t accumulator, const uint8_t next_chunk)
 {
-  const int128_ct new_accumulator = (accumulator * g_factor_per_chunk) + next_chunk;
+  const uint64_t new_accumulator = (accumulator * g_factor_per_chunk) + next_chunk;
   KSLOG_DEBUG("Accumulate chunk value %02x. Accumulator now = %016lx %016lx", next_chunk, (uint64_t)(new_accumulator >> 64), (uint64_t)new_accumulator);
   return new_accumulator;
 }
 
-static inline int extract_byte_from_accumulator(const int128_ct accumulator, const int byte_index_lo_first)
+static inline int extract_byte_from_accumulator(const uint64_t accumulator, const int byte_index_lo_first)
 {
   const int byte_mask = (1 << g_bits_per_byte) - 1;
   const int shift_amount = byte_index_lo_first * g_bits_per_byte;
@@ -396,13 +396,13 @@ static inline int extract_byte_from_accumulator(const int128_ct accumulator, con
   return extracted_byte;
 }
 
-static inline int extract_chunk_from_accumulator(const int128_ct accumulator, const int chunk_index_lo_first)
+static inline int extract_chunk_from_accumulator(const uint64_t accumulator, const int chunk_index_lo_first)
 {
   static bool is_initialized = false;
-  static int128_ct divide_amounts[19]; // g_chunks_per_group
+  static uint64_t divide_amounts[19]; // g_chunks_per_group
   if (!is_initialized) {
     divide_amounts[0] = 0;
-    int128_ct initializer = g_factor_per_chunk;
+    uint64_t initializer = g_factor_per_chunk;
     for (int i = 1; i < g_chunks_per_group; i++) {
       divide_amounts[i] = initializer;
       initializer *= g_factor_per_chunk;
@@ -418,7 +418,7 @@ static inline int extract_chunk_from_accumulator(const int128_ct accumulator, co
     return extracted_chunk;
   }
 
-  const int128_ct divide_amount = divide_amounts[chunk_index_lo_first];
+  const uint64_t divide_amount = divide_amounts[chunk_index_lo_first];
   const int extracted_chunk = (accumulator / divide_amount) % chunk_modulo;
   KSLOG_DEBUG("Extract chunk %d from %016llx %016llx: %02x (%c)", chunk_index_lo_first, (uint64_t)(accumulator >> 64), (uint64_t)accumulator, extracted_chunk,
       g_chunk_to_encode_char[extracted_chunk]);
@@ -494,7 +494,7 @@ safe80_status safe80_decode_feed(const uint8_t** const src_buffer_ptr,
 
   const uint8_t* last_src = src;
   int current_group_chunk_count = 0;
-  int128_ct accumulator = 0;
+  uint64_t accumulator = 0;
 
   while (src < src_end) {
     const uint8_t next_char = *src++;
@@ -748,7 +748,7 @@ safe80_status safe80_encode_feed(const uint8_t** const src_buffer_ptr,
 
   const uint8_t* last_src = src;
   int current_group_byte_count = 0;
-  int128_ct accumulator = 0;
+  uint64_t accumulator = 0;
 
   while (src < src_end) {
     const uint8_t next_byte = *src++;
